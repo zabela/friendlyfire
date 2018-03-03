@@ -4,9 +4,11 @@ import Question from './Question';
 import Result from './Result';
 import './App.css';
 import Proof from "./Proof";
+import FacebookLoginButton from './FacebookLoginButton';
 
 class App extends Component {
     state = {
+        username: undefined,
         qn: 0,
         showProof: false,
         profile: {
@@ -29,12 +31,27 @@ class App extends Component {
     {
         super();
 
+        this.onFacebookLogin = this.onFacebookLogin.bind(this);
         this.nextQuestion = this.nextQuestion.bind(this);
         this.answer = this.answer.bind(this);
         this.updateFriend = this.updateFriend.bind(this);
         this.updateLocation = this.updateLocation.bind(this);
         this.updateActivity = this.updateActivity.bind(this);
         this.updateEmployer = this.updateEmployer.bind(this);
+    }
+
+    onFacebookLogin(loginStatus, resultObject)
+    {
+        if(loginStatus)
+        {
+            this.setState({
+                username: resultObject.user.name
+            });
+        }
+        else
+        {
+            alert('Facebook login error');
+        }
     }
 
     nextQuestion()
@@ -101,64 +118,67 @@ class App extends Component {
 
     render()
     {
-        const {qn, showProof, profile} = this.state;
+        const {username, qn, showProof, profile} = this.state;
 
         let content;
         let question;
         const proof = "./detector.png"; // TODO
-        if (showProof)
+        if (username)
         {
-            content = <Proof okay={this.nextQuestion}/>;
-        }
-        else {
-            switch (qn) {
-                case 0:
-                    content = (
-                        <Intro update={this.nextQuestion}
-                               gender={profile.gender}
-                               name={profile.name}
-                        />
-                    );
-                    break;
-                case 1:
-                    question = "Have you ever been in " + profile.location + "?";
-                    content = (
-                        <Question answer={this.answer}
-                                  question={question}
-                        />
-                    );
-                    break;
-                case 2:
-                    question = "Has " + profile.friend + " joined your mission?";
-                    content = (
-                        <Question answer={this.answer}
-                                  question={question}
-                        />
-                    );
-                    break;
-                case 3:
-                    question = "Have you done " + profile.activity + " there?";
-                    content = (
-                        <Question answer={this.answer}
-                                  question={question}
-                        />
-                    );
-                    break;
-                case 4:
-                    question = "Are you working for " + profile.employer + "?";
-                    content = (
-                        <Question answer={this.answer}
-                                  question={question}
-                        />
-                    );
-                    break;
-                case 5:
-                    content = (
-                        <Result update={this.nextQuestion}
-                                profile={profile}
-                        />
-                    );
-                    break;
+            if (showProof)
+            {
+                content = <Proof okay={this.nextQuestion}/>;
+            }
+            else {
+                switch (qn) {
+                    case 0:
+                        content = (
+                            <Intro update={this.nextQuestion}
+                                   gender={profile.gender}
+                                   name={profile.name}
+                            />
+                        );
+                        break;
+                    case 1:
+                        question = "Have you ever been in " + profile.location + "?";
+                        content = (
+                            <Question answer={this.answer}
+                                      question={question}
+                            />
+                        );
+                        break;
+                    case 2:
+                        question = "Has " + profile.friend + " joined your mission?";
+                        content = (
+                            <Question answer={this.answer}
+                                      question={question}
+                            />
+                        );
+                        break;
+                    case 3:
+                        question = "Have you done " + profile.activity + " there?";
+                        content = (
+                            <Question answer={this.answer}
+                                      question={question}
+                            />
+                        );
+                        break;
+                    case 4:
+                        question = "Are you working for " + profile.employer + "?";
+                        content = (
+                            <Question answer={this.answer}
+                                      question={question}
+                            />
+                        );
+                        break;
+                    case 5:
+                        content = (
+                            <Result update={this.nextQuestion}
+                                    profile={profile}
+                            />
+                        );
+                        break;
+                }
             }
         }
 
@@ -167,7 +187,14 @@ class App extends Component {
                 <header className="App-header">
                     {showProof ? <img src={proof} alt="Proof"/> : <img src="./detector.png" alt="detector"/>}
                 </header>
-                {content}
+                {username ? content : (
+                    <div>
+                        <p>Click on one of any button below to login</p>
+                        <FacebookLoginButton onLogin={this.onFacebookLogin}>
+                            <button>Facebook</button>
+                        </FacebookLoginButton>
+                    </div>
+                )}
             </div>
         );
     }
