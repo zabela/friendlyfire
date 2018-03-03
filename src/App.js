@@ -3,10 +3,12 @@ import Intro from './Intro';
 import Question from './Question';
 import Result from './Result';
 import './App.css';
+import Proof from "./Proof";
 
 class App extends Component {
     state = {
         qn: 0,
+        showProof: false,
         friend: undefined,
         location: undefined,
         month: undefined,
@@ -20,6 +22,7 @@ class App extends Component {
         super();
 
         this.nextQuestion = this.nextQuestion.bind(this);
+        this.answer = this.answer.bind(this);
         this.updateFriend = this.updateFriend.bind(this);
         this.updateLocation = this.updateLocation.bind(this);
         this.updateActivity = this.updateActivity.bind(this);
@@ -30,8 +33,26 @@ class App extends Component {
     {
         const nextQn = this.state.qn === 5 ? 0 : this.state.qn + 1;
         this.setState({
-            qn: nextQn
+            qn: nextQn,
+            showProof: false
         });
+    }
+
+    answer(truth)
+    {
+        if (truth)
+        {
+            const nextQn = this.state.qn + 1;
+            this.setState({
+                qn: nextQn
+            });
+        }
+        else
+        {
+            this.setState({
+                showProof: true
+            });
+        }
     }
 
     updateFriend(friend)
@@ -72,49 +93,57 @@ class App extends Component {
 
     render()
     {
+        const {qn, showProof} = this.state;
+
         let content;
-        switch (this.state.qn)
+        const proof = "./detector.png"; // TODO
+        if (showProof)
         {
-            case 0:
-                content = <Intro update={this.nextQuestion}/>;
-                break;
-            case 1:
-                content = (
-                    <Question update={this.updateLocation}
-                              question={"Have you ever been in {location}?"}
-                    />
-                );
-                break;
-            case 2:
-                content = (
-                    <Question update={this.updateFriend}
-                              question={"Has {friend} joined your mission?"}
-                    />
-                );
-                break;
-            case 3:
-                content = (
-                    <Question update={this.updateActivity}
-                              question={"Have you done {activity} there?"}
-                    />
-                );
-                break;
-            case 4:
-                content = (
-                    <Question update={this.updateEmployer}
-                              question={"Are you working for {employer}?"}
-                    />
-                );
-                break;
-            case 5:
-                content = <Result update={this.nextQuestion}/>;
-                break;
+            content = <Proof okay={this.nextQuestion}/>;
+        }
+        else {
+            switch (qn) {
+                case 0:
+                    content = <Intro update={this.nextQuestion}/>;
+                    break;
+                case 1:
+                    content = (
+                        <Question answer={this.answer}
+                                  question={"Have you ever been in {location}?"}
+                        />
+                    );
+                    break;
+                case 2:
+                    content = (
+                        <Question answer={this.answer}
+                                  question={"Has {friend} joined your mission?"}
+                        />
+                    );
+                    break;
+                case 3:
+                    content = (
+                        <Question answer={this.answer}
+                                  question={"Have you done {activity} there?"}
+                        />
+                    );
+                    break;
+                case 4:
+                    content = (
+                        <Question answer={this.answer}
+                                  question={"Are you working for {employer}?"}
+                        />
+                    );
+                    break;
+                case 5:
+                    content = <Result update={this.nextQuestion}/>;
+                    break;
+            }
         }
 
         return (
             <div className="App">
                 <header className="App-header">
-                    <img src="./detector.png" alt="detector"/>
+                    {showProof ? <img src={proof} alt="Proof"/> : <img src="./detector.png" alt="detector"/>}
                     <h1 className="App-title">Friendly Fire</h1>
                 </header>
                 {content}

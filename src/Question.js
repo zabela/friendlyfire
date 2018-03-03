@@ -12,12 +12,12 @@ class Question extends Component {
 
     confirm()
     {
-        this.props.update(true);
+        this.props.answer(true);
     }
 
     deny()
     {
-        this.props.update(false);
+        this.props.answer(false);
     }
 
     render()
