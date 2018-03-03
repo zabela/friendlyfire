@@ -9,6 +9,14 @@ class App extends Component {
     state = {
         qn: 0,
         showProof: false,
+        profile: {
+            gender: "male",
+            name: "Bond",
+            location: "London",
+            friend: "Max",
+            activity: "skydiving",
+            employer: "MI6"
+        },
         friend: undefined,
         location: undefined,
         month: undefined,
@@ -93,9 +101,10 @@ class App extends Component {
 
     render()
     {
-        const {qn, showProof} = this.state;
+        const {qn, showProof, profile} = this.state;
 
         let content;
+        let question;
         const proof = "./detector.png"; // TODO
         if (showProof)
         {
@@ -104,38 +113,51 @@ class App extends Component {
         else {
             switch (qn) {
                 case 0:
-                    content = <Intro update={this.nextQuestion}/>;
+                    content = (
+                        <Intro update={this.nextQuestion}
+                               gender={profile.gender}
+                               name={profile.name}
+                        />
+                    );
                     break;
                 case 1:
+                    question = "Have you ever been in " + profile.location + "?";
                     content = (
                         <Question answer={this.answer}
-                                  question={"Have you ever been in {location}?"}
+                                  question={question}
                         />
                     );
                     break;
                 case 2:
+                    question = "Has " + profile.friend + " joined your mission?";
                     content = (
                         <Question answer={this.answer}
-                                  question={"Has {friend} joined your mission?"}
+                                  question={question}
                         />
                     );
                     break;
                 case 3:
+                    question = "Have you done " + profile.activity + " there?";
                     content = (
                         <Question answer={this.answer}
-                                  question={"Have you done {activity} there?"}
+                                  question={question}
                         />
                     );
                     break;
                 case 4:
+                    question = "Are you working for " + profile.employer + "?";
                     content = (
                         <Question answer={this.answer}
-                                  question={"Are you working for {employer}?"}
+                                  question={question}
                         />
                     );
                     break;
                 case 5:
-                    content = <Result update={this.nextQuestion}/>;
+                    content = (
+                        <Result update={this.nextQuestion}
+                                profile={profile}
+                        />
+                    );
                     break;
             }
         }
@@ -144,7 +166,6 @@ class App extends Component {
             <div className="App">
                 <header className="App-header">
                     {showProof ? <img src={proof} alt="Proof"/> : <img src="./detector.png" alt="detector"/>}
-                    <h1 className="App-title">Friendly Fire</h1>
                 </header>
                 {content}
             </div>
